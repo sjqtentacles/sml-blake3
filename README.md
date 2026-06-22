@@ -29,6 +29,11 @@ val mac = Blake3.keyedHash key "message"
 
 (* Key derivation function *)
 val derived = Blake3.deriveKey "context string" "key material"
+
+(* Hex siblings of the byte-returning functions (lowercase hex). *)
+val macHex = Blake3.hashKeyedHex key "message"
+val dkHex  = Blake3.deriveKeyHex "context string" "key material"
+val xofHex = Blake3.hashLenHex 64 "data"   (* extended-output hash, hex *)
 ```
 
 ## Testing

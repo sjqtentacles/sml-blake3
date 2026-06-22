@@ -365,6 +365,9 @@ struct
     in word8ArrayToString (hashInternal (msg, kw, flag_KEYED_HASH, outSize))
     end
 
+  fun hashKeyedHex (key : string) (msg : string) : string =
+    toHex (hashKeyed key msg)
+
   fun deriveKey (context : string) (material : string) : string =
     let
       val ctxKeyArr = hashInternal (context, ivVec, flag_DERIVE_KEY_CONTEXT, outSize)
@@ -372,7 +375,13 @@ struct
     in word8ArrayToString (hashInternal (material, ckWords, flag_DERIVE_KEY_MATERIAL, outSize))
     end
 
+  fun deriveKeyHex (context : string) (material : string) : string =
+    toHex (deriveKey context material)
+
   fun hashLen (outLen : int) (msg : string) : string =
     word8ArrayToString (hashInternal (msg, ivVec, 0w0, outLen))
+
+  fun hashLenHex (outLen : int) (msg : string) : string =
+    toHex (hashLen outLen msg)
 
 end

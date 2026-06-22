@@ -150,6 +150,38 @@ struct
         (Blake3.hash "" <> Blake3.deriveKey ctx "")
       val _ = Harness.check "deriveKey different context -> different output"
         (Blake3.deriveKey "ctx1" "msg" <> Blake3.deriveKey "ctx2" "msg")
+
+      val _ = Harness.section "BLAKE3 *Hex siblings"
+
+      (* hashKeyedHex matches the official keyed_hash hex vectors directly *)
+      val _ = Harness.checkString "hashKeyedHex empty (official)"
+        ("92b2b75604ed3c761f9d6f62392c8a9227ad0ea3f09573e783f1498a4ed60d26",
+         Blake3.hashKeyedHex officialKey "")
+      val _ = Harness.checkString "hashKeyedHex 1 byte (official)"
+        ("6d7878dfff2f485635d39013278ae14f1454b8c0a3a2d34bc1ab38228a80c95b",
+         Blake3.hashKeyedHex officialKey (makeInput 1))
+      (* hashKeyedHex == hex of hashKeyed bytes *)
+      val _ = Harness.checkString "hashKeyedHex == hex(hashKeyed)"
+        (hexChars (Blake3.hashKeyed officialKey "abc"),
+         Blake3.hashKeyedHex officialKey "abc")
+
+      (* deriveKeyHex matches the official derive_key hex vectors directly *)
+      val _ = Harness.checkString "deriveKeyHex empty (official)"
+        ("2cc39783c223154fea8dfb7c1b1660f2ac2dcbd1c1de8277b0b0dd39b7e50d7d",
+         Blake3.deriveKeyHex ctx "")
+      val _ = Harness.checkString "deriveKeyHex 1 byte (official)"
+        ("b3e2e340a117a499c6cf2398a19ee0d29cca2bb7404c73063382693bf66cb06c",
+         Blake3.deriveKeyHex ctx (makeInput 1))
+      val _ = Harness.checkString "deriveKeyHex == hex(deriveKey)"
+        (hexChars (Blake3.deriveKey ctx "abc"), Blake3.deriveKeyHex ctx "abc")
+
+      (* hashLenHex == hex of hashLen bytes; and hashLenHex 32 == hashHex *)
+      val _ = Harness.checkString "hashLenHex 32 empty == hashHex empty"
+        (Blake3.hashHex "", Blake3.hashLenHex 32 "")
+      val _ = Harness.checkString "hashLenHex == hex(hashLen)"
+        (hexChars (Blake3.hashLen 16 "abc"), Blake3.hashLenHex 16 "abc")
+      val _ = Harness.checkInt "hashLenHex 16 length = 32 chars"
+        (32, String.size (Blake3.hashLenHex 16 ""))
     in
       Harness.run ()
     end
